@@ -1,5 +1,6 @@
 mod app_config;
 mod handlers;
+mod security;
 mod states;
 
 use std::sync::Mutex;
@@ -9,6 +10,7 @@ use handlers::{echo, hello, manual_hello};
 
 use crate::{
     app_config::{config, scoped_config},
+    security::ssl_builder,
     states::{echo_counts, hello_name, AppState, AppStateWithCounter},
 };
 
@@ -19,6 +21,7 @@ async fn main() -> std::io::Result<()> {
     let counter = web::Data::new(AppStateWithCounter {
         counter: Mutex::new(0),
     });
+    let builder = ssl_builder();
     HttpServer::new(move || {
         App::new()
             .configure(config)
@@ -39,7 +42,7 @@ async fn main() -> std::io::Result<()> {
             .route("/hey", web::get().to(manual_hello))
             .route("/count", web::get().to(echo_counts))
     })
-    .bind(format!("127.0.0.1:{}", PORT))?
+    .bind_openssl(format!("127.0.0.1:{}", PORT), builder)?
     .run()
     .await
 }
