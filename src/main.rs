@@ -2,6 +2,7 @@ mod app_config;
 mod handlers;
 mod security;
 mod states;
+mod stream;
 
 use std::sync::Mutex;
 
@@ -13,6 +14,7 @@ use crate::{
     handlers::read_post,
     security::ssl_builder,
     states::{echo_counts, hello_name, AppState, AppStateWithCounter},
+    stream::stream_test,
 };
 
 const PORT: &'static str = "4000";
@@ -40,6 +42,7 @@ async fn main() -> std::io::Result<()> {
             .service(hello_name)
             .service(hello)
             .service(echo)
+            .service(stream_test)
             .route("/hey", web::get().to(manual_hello))
             .route("/count", web::get().to(echo_counts))
             .route("/post", web::get().to(read_post))
