@@ -1,3 +1,4 @@
+mod app_config;
 mod handlers;
 mod states;
 
@@ -6,7 +7,10 @@ use std::sync::Mutex;
 use actix_web::{guard, web, App, HttpResponse, HttpServer};
 use handlers::{echo, hello, manual_hello};
 
-use crate::states::{echo_counts, hello_name, AppState, AppStateWithCounter};
+use crate::{
+    app_config::{config, scoped_config},
+    states::{echo_counts, hello_name, AppState, AppStateWithCounter},
+};
 
 const PORT: &'static str = "4000";
 
@@ -17,6 +21,8 @@ async fn main() -> std::io::Result<()> {
     });
     HttpServer::new(move || {
         App::new()
+            .configure(config)
+            .service(web::scope("/api").configure(scoped_config))
             .data(AppState {
                 app_name: String::from("Actix-web"),
             })
