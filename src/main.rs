@@ -3,7 +3,7 @@ mod states;
 
 use std::sync::Mutex;
 
-use actix_web::{web, App, HttpServer};
+use actix_web::{guard, web, App, HttpResponse, HttpServer};
 use handlers::{echo, hello, manual_hello};
 
 use crate::states::{echo_counts, hello_name, AppState, AppStateWithCounter};
@@ -21,6 +21,12 @@ async fn main() -> std::io::Result<()> {
                 app_name: String::from("Actix-web"),
             })
             .app_data(counter.clone())
+            .service(
+                web::scope("/")
+                    // Guard will filter accordingly to predicate
+                    .guard(guard::Header("Host", "users.rust-lang.org"))
+                    .route("", web::to(|| HttpResponse::Ok().body("user"))),
+            )
             .service(hello_name)
             .service(hello)
             .service(echo)
