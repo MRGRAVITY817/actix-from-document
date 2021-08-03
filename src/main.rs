@@ -10,6 +10,7 @@ use handlers::{echo, hello, manual_hello};
 
 use crate::{
     app_config::{config, scoped_config},
+    handlers::read_post,
     security::ssl_builder,
     states::{echo_counts, hello_name, AppState, AppStateWithCounter},
 };
@@ -41,6 +42,7 @@ async fn main() -> std::io::Result<()> {
             .service(echo)
             .route("/hey", web::get().to(manual_hello))
             .route("/count", web::get().to(echo_counts))
+            .route("/post", web::get().to(read_post))
     })
     .bind_openssl(format!("127.0.0.1:{}", PORT), builder)?
     .run()
