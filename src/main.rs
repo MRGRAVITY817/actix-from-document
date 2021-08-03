@@ -1,4 +1,5 @@
 mod app_config;
+mod either;
 mod handlers;
 mod security;
 mod states;
@@ -11,6 +12,7 @@ use handlers::{echo, hello, manual_hello};
 
 use crate::{
     app_config::{config, scoped_config},
+    either::which_either,
     handlers::read_post,
     security::ssl_builder,
     states::{echo_counts, hello_name, AppState, AppStateWithCounter},
@@ -43,6 +45,7 @@ async fn main() -> std::io::Result<()> {
             .service(hello)
             .service(echo)
             .service(stream_test)
+            .service(which_either)
             .route("/hey", web::get().to(manual_hello))
             .route("/count", web::get().to(echo_counts))
             .route("/post", web::get().to(read_post))
