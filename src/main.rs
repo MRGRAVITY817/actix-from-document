@@ -14,7 +14,7 @@ use handlers::{echo, hello, manual_hello};
 use crate::{
     app_config::{config, scoped_config},
     either::which_either,
-    extractors::path_extract,
+    extractors::{path_extract, path_struct_extract},
     handlers::read_post,
     security::ssl_builder,
     states::{echo_counts, hello_name, AppState, AppStateWithCounter},
@@ -49,6 +49,7 @@ async fn main() -> std::io::Result<()> {
             .service(stream_test)
             .service(which_either)
             .service(path_extract)
+            .service(path_struct_extract)
             .route("/hey", web::get().to(manual_hello))
             .route("/count", web::get().to(echo_counts))
             .route("/post", web::get().to(read_post))
