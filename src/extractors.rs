@@ -1,4 +1,4 @@
-use actix_web::{get, web, Result};
+use actix_web::{get, web, HttpRequest, Result};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -13,7 +13,7 @@ impl Info {
     }
 }
 
-#[get("users/{user_id}/{friend}")]
+#[get("/users/{user_id}/{friend}")]
 pub async fn path_extract(
     // you can parse instantly from the param
     web::Path((user_id, friend)): web::Path<(u32, String)>,
@@ -21,8 +21,15 @@ pub async fn path_extract(
     Ok(format!("Welcome {}, user_id {}!\n", friend, &user_id))
 }
 
-#[get("users/{user_id}/{peer}")]
+#[get("/peers/{user_id}/{peer}")]
 pub async fn path_struct_extract(info: web::Path<Info>) -> Result<String> {
     let (user_id, peer) = info.get_user_info();
-    Ok(format!("Hello {}, user_id {}!", peer, user_id))
+    Ok(format!("Hello peer {}, user_id {}!", peer, user_id))
+}
+
+#[get("/items/{tier}/{weapon}")]
+pub async fn path_weapon(req: HttpRequest) -> Result<String> {
+    let name: String = req.match_info().get("weapon").unwrap().parse().unwrap();
+    let tier: i32 = req.match_info().query("tier").parse().unwrap();
+    Ok(format!("The weapon {}, tier {}.", name, tier))
 }
