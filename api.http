@@ -14,3 +14,9 @@ POST http://localhost:4000/formdata
 content-type: application/x-www-form-urlencoded 
 
 username=Harry&age=13
+
+###
+GET http://localhost:4000/reqs/add
+
+###
+GET http://localhost:4000/reqs

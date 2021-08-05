@@ -6,7 +6,10 @@ mod security;
 mod states;
 mod stream;
 
-use std::sync::Mutex;
+use std::{
+    cell::Cell,
+    sync::{atomic::AtomicUsize, Arc, Mutex},
+};
 
 use actix_web::{error, guard, web, App, HttpResponse, HttpServer};
 use handlers::{echo, hello, manual_hello};
@@ -19,7 +22,10 @@ use crate::{
         welcome_peer_json,
     },
     handlers::read_post,
-    states::{echo_counts, hello_name, AppState, AppStateWithCounter},
+    states::{
+        add_req, echo_counts, hello_name, show_reqs, AppState, AppStateWithCounter,
+        RequestCountState,
+    },
     stream::stream_test,
 };
 
@@ -30,6 +36,7 @@ async fn main() -> std::io::Result<()> {
     let counter = web::Data::new(AppStateWithCounter {
         counter: Mutex::new(0),
     });
+    let req_counter = RequestCountState::new(Cell::new(0), Arc::new(AtomicUsize::new(0)));
     // let builder = ssl_builder();
     HttpServer::new(move || {
         let json_config = web::JsonConfig::default()
@@ -42,6 +49,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .configure(config)
             .service(web::scope("/api").configure(scoped_config))
+            .data(req_counter.clone())
             .data(AppState {
                 app_name: String::from("Actix-web"),
             })
@@ -68,6 +76,8 @@ async fn main() -> std::io::Result<()> {
             .service(welcome_peer)
             .service(welcome_peer_json)
             .service(get_formdata)
+            .service(show_reqs)
+            .service(add_req)
             .route("/hey", web::get().to(manual_hello))
             .route("/count", web::get().to(echo_counts))
             .route("/post", web::get().to(read_post))
