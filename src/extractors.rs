@@ -1,4 +1,4 @@
-use actix_web::{get, web, HttpRequest, Responder, Result};
+use actix_web::{get, post, web, HttpRequest, Responder, Result};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -60,4 +60,22 @@ impl UserInfo {
 pub async fn get_username(info: web::Json<UserInfo>) -> impl Responder {
     let username = info.get_username();
     format!("Welcome username: {}\n", username)
+}
+
+#[derive(Deserialize)]
+pub struct FormData {
+    username: String,
+    age: i32,
+}
+
+impl FormData {
+    pub fn get_info(&self) -> (&str, &i32) {
+        (&self.username, &self.age)
+    }
+}
+
+#[post("/formdata")]
+pub async fn get_formdata(form: web::Form<FormData>) -> Result<String> {
+    let (username, age) = form.get_info();
+    Ok(format!("{}'s age is {}\n", username, age))
 }

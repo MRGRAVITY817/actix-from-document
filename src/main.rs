@@ -15,11 +15,10 @@ use crate::{
     app_config::{config, scoped_config},
     either::which_either,
     extractors::{
-        get_username, path_extract, path_struct_extract, path_weapon, welcome_peer,
+        get_formdata, get_username, path_extract, path_struct_extract, path_weapon, welcome_peer,
         welcome_peer_json,
     },
     handlers::read_post,
-    // security::ssl_builder,
     states::{echo_counts, hello_name, AppState, AppStateWithCounter},
     stream::stream_test,
 };
@@ -68,6 +67,7 @@ async fn main() -> std::io::Result<()> {
             .service(path_weapon)
             .service(welcome_peer)
             .service(welcome_peer_json)
+            .service(get_formdata)
             .route("/hey", web::get().to(manual_hello))
             .route("/count", web::get().to(echo_counts))
             .route("/post", web::get().to(read_post))
