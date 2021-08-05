@@ -1,4 +1,4 @@
-use actix_web::{get, web, HttpRequest, Result};
+use actix_web::{get, web, HttpRequest, Responder, Result};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -32,4 +32,32 @@ pub async fn path_weapon(req: HttpRequest) -> Result<String> {
     let name: String = req.match_info().get("weapon").unwrap().parse().unwrap();
     let tier: i32 = req.match_info().query("tier").parse().unwrap();
     Ok(format!("The weapon {}, tier {}.", name, tier))
+}
+
+#[get("/peers")]
+pub async fn welcome_peer(info: web::Query<Info>) -> String {
+    let (_, peer) = info.get_user_info();
+    format!("Welcome Peer {}", peer)
+}
+
+#[get("/peers/json")]
+pub async fn welcome_peer_json(info: web::Json<Info>) -> Result<String> {
+    let (_, peer) = info.get_user_info();
+    Ok(format!("Welcome {}!", peer))
+}
+
+#[derive(Deserialize)]
+pub struct UserInfo {
+    username: String,
+}
+
+impl UserInfo {
+    pub fn get_username(&self) -> &str {
+        &self.username
+    }
+}
+
+pub async fn get_username(info: web::Json<UserInfo>) -> impl Responder {
+    let username = info.get_username();
+    format!("Welcome username: {}\n", username)
 }
