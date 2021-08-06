@@ -11,7 +11,6 @@ pub struct AppState {
     pub app_name: String,
 }
 
-#[get("/name")]
 pub async fn hello_name(data: web::Data<AppState>) -> String {
     let app_name = &data.app_name;
     format!("Hello {}!\n", app_name)
@@ -42,7 +41,7 @@ impl RequestCountState {
     }
 }
 
-#[get("/reqs")]
+#[get("/")]
 pub async fn show_reqs(data: web::Data<RequestCountState>) -> impl Responder {
     format!(
         "Global count: {}\nLocal count: {}\n",
@@ -51,7 +50,7 @@ pub async fn show_reqs(data: web::Data<RequestCountState>) -> impl Responder {
     )
 }
 
-#[get("/reqs/add")]
+#[get("/add")]
 pub async fn add_req(data: web::Data<RequestCountState>) -> impl Responder {
     // You cannot set cell and arc values in normal way.
     // "fetch_add(value, order)" is used for adding atomic int value.

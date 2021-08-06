@@ -2,21 +2,40 @@
 GET http://localhost:4000/
 
 ###
-POST http://localhost:4000/username
+GET http://localhost:4000/post
+
+###
+GET http://localhost:4000/user/1/harry
+
+###
+POST http://localhost:4000/user/json
 content-type: application/json
 
 {
-	"username": "Harry"
+	"user": "Harry",
+	"id": 1
 }
 
 ###
-POST http://localhost:4000/formdata
+POST http://localhost:4000/user/form
 content-type: application/x-www-form-urlencoded 
 
-username=Harry&age=13
+user=Harry&id=13
 
 ###
-GET http://localhost:4000/reqs/add
+GET http://localhost:4000/item/query?tier=1&name=Daedric_Sword
 
 ###
-GET http://localhost:4000/reqs
+POST http://localhost:4000/item/json
+content-type: application/json
+
+{
+	"tier": 1,
+	"name": "Daedric greatsword"
+}
+
+###
+GET http://localhost:4000/states/name
+
+###
+GET http://localhost:4000/req/add

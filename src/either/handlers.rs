@@ -1,8 +1,7 @@
-use actix_web::{post, Either, Error, HttpResponse};
+use actix_web::{Either, Error, HttpResponse};
 
 type RegisterResult = Either<HttpResponse, Result<&'static str, Error>>;
 
-#[post("/lang")]
 pub async fn which_either(req_body: String) -> RegisterResult {
     let req = &req_body;
     if req.starts_with("Java") {

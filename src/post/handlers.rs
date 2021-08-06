@@ -1,20 +1,14 @@
 use std::future::{ready, Ready};
 
-use actix_web::{get, post, Error, HttpRequest, HttpResponse, Responder};
+use actix_web::{Error, HttpRequest, HttpResponse, Responder};
 use serde::Serialize;
 
-#[get("/")]
 pub async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!\n")
 }
 
-#[post("/echo")]
 pub async fn echo(req_body: String) -> impl Responder {
     HttpResponse::Ok().body(format!("{}\n", req_body))
-}
-
-pub async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!\n")
 }
 
 #[derive(Serialize)]
