@@ -39,3 +39,6 @@ GET http://localhost:4000/states/name
 
 ###
 GET http://localhost:4000/req/add
+
+###
+GET http://localhost:4000/error/more/1

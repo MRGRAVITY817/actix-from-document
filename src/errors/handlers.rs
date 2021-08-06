@@ -2,13 +2,13 @@ use actix_web::{
     dev::HttpResponseBuilder,
     error, get,
     http::{header, StatusCode},
-    HttpResponse, Result,
+    HttpRequest, HttpResponse, Result,
 };
 use derive_more::{Display, Error};
 
 #[derive(Debug, Display, Error)]
 #[display(fmt = "my error: {}", name)]
-struct MyError {
+pub struct MyError {
     name: &'static str,
 }
 
@@ -20,7 +20,7 @@ pub async fn test_myerror() -> Result<&'static str, MyError> {
 }
 
 #[derive(Debug, Display, Error)]
-enum MoreError {
+pub enum MoreError {
     #[display(fmt = "internal error")]
     InternalError,
     #[display(fmt = "bad request")]
@@ -45,7 +45,12 @@ impl error::ResponseError for MoreError {
     }
 }
 
-#[get("/more")]
-pub async fn more_error() -> Result<&'static str, MoreError> {
-    Err(MoreError::BadRequest)
+#[get("/more/{error_type}")]
+pub async fn more_error(req: HttpRequest) -> Result<&'static str, MoreError> {
+    let error_type: i32 = req.match_info().query("error_type").parse().unwrap();
+    match &error_type {
+        1 => Err(MoreError::InternalError),
+        2 => Err(MoreError::BadRequest),
+        _ => Err(MoreError::Timeout),
+    }
 }
